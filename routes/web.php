@@ -17,16 +17,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/auth', [UserController::class, 'auth']);
+// Route::post('/auth', [UserController::class, 'auth']);
 
-Route::resource('users', UsersController::class)->only([
-    'index',
-]);
+// Route::resource('users', UsersController::class)->only([
+//     'index',
+// ]);
 
-Route::resource('courses', CoursesController::class)->only([
-    'index', 'create', 'store', 'update', 'destroy'
-]);
+// Route::resource('courses', CoursesController::class)->only([
+//     'index', 'create', 'store', 'update', 'destroy'
+// ]);
 
-Route::resource('notes', NotesController::class)->only([
-    'index', 'create', 'store', 'update', 'destroy'
-]);
+// Route::resource('notes', NotesController::class)->only([
+//     'index', 'create', 'store', 'update', 'destroy'
+// ]);
