@@ -21,7 +21,7 @@ class UsersController extends Controller
             'email' => 'required',
             'password' => 'required',
         ];
-        
+
         $messages = [
             'email.required' => 'El Email es obligatorio!',
             'password.required' => 'La Contrasena es obligaria',
@@ -35,13 +35,18 @@ class UsersController extends Controller
                 'status' => 201,
                 'response' => $errors,
             ]);
-         }
-         if (Auth::attempt($request->all())) {
+        }
+
+        if (Auth::attempt($request->all())) {
              //Hacemos uso del facade de auth, y generamos sesion
-             $apikey = base64_encode(\Illuminate\Support\Str::random(40));
-             User::where('email', $request->email)->update(['remember_token' => $apikey]);
-             $user = User::where('email', $request->email)->first();
+            $apikey = base64_encode(\Illuminate\Support\Str::random(40));
+            User::where('email', $request->email)->update(['remember_token' => $apikey]);
+            $user = User::where('email', $request->email)->first();
             return response()->json(['status' => 200, 'response' =>  $user]);
         }
+    }
+
+    public function index(){
+        return User::all();
     }
 }
