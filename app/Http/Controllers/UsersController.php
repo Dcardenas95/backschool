@@ -8,15 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Session;
 
-
 class UsersController extends Controller
 {
-    //
-    public function auth(Request $request)
-    {
-        // $name = $request->email;
-        // $password = $request->password;
-
+    public function auth(Request $request) {
         $rules = [
             'email' => 'required',
             'password' => 'required',
@@ -43,10 +37,19 @@ class UsersController extends Controller
             User::where('email', $request->email)->update(['remember_token' => $apikey]);
             $user = User::where('email', $request->email)->first();
             return response()->json(['status' => 200, 'response' =>  $user]);
+        } else {
+            return response()->json([
+                'status' => 201,
+                'response' => [
+                    'error' => 'Email or password incorrect',
+                    'user' => 'User no exist'
+                ],
+            ]);
         }
     }
 
     public function index(){
-        return User::all();
+        $users = User::all();
+        return response()->json(['status' => 200, 'response' =>  $users]);
     }
 }
