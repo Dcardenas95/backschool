@@ -32,3 +32,4 @@ Route::resource('courses', CoursesController::class)->only([
 Route::resource('notes', NotesController::class)->only([
     'index', 'create', 'store', 'update', 'destroy'
 ]);
+
