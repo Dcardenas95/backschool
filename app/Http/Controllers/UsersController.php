@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -51,5 +52,36 @@ class UsersController extends Controller
     public function index(){
         $users = User::all();
         return response()->json(['status' => 200, 'response' =>  $users]);
+    }
+
+    public function store(Request $request){
+        $rules = [
+            'fullname' => 'required',
+            'email' => 'required',
+            'rol' => 'required',
+            'avatar' => 'required|mimes:jpg,bmp,png, '
+        ];
+
+        $messages = [
+            'fullname.required' => 'fullname is required!',
+            'email.required' => 'email is required!',
+            'rol.required' => 'rol is required!',
+            'avatar.required' => 'avatar is required!',
+            'avatar.mimes' => 'avatar format file as (jpg,bmp,png)'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            return response()->json([
+                'status' => 201,
+                'response' => $errors,
+            ]);
+        }
+        $path = Storage::putFile('avatars', $request->file('avatar'));
+        $request['path'] = $path;
+        $save = User::create($request->all());
+        return response()->json(['status' => 200, 'response' => $save]);
     }
 }

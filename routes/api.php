@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/auth', [UsersController::class, 'auth']);
 
 Route::resource('users', UsersController::class)->only([
-    'index',
+    'index', 'store', 'update', 'destroy'
 ]);
 
 Route::resource('courses', CoursesController::class)->only([
