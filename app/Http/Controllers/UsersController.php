@@ -81,7 +81,13 @@ class UsersController extends Controller
         }
         $path = Storage::putFile('avatars', $request->file('avatar'));
         $request['path'] = $path;
-        $save = User::create($request->all());
+        $save = User::create([
+            'fullname' => $request->fullname,
+            'email' => $request->email,
+            'rol' => $request->rol,
+            'password' => bcrypt($request->password)
+        ]
+        );
         return response()->json(['status' => 200, 'response' => $save]);
     }
 }
