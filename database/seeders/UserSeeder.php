@@ -21,12 +21,14 @@ class UserSeeder extends Seeder
             'rol' => 'admin',
             'email' => 'admin@gmail.com',
             'remember_token' => Str::random(10),
+            'path' => '',
             'password' => Hash::make(12345678),
         ]);
         User::create([
             'fullname' => 'sebastian guerrero',
             'rol' => 'docente',
             'email' => 'docente@gmail.com',
+            'path' => '',
             'remember_token' => Str::random(10),
             'password' => Hash::make(12345678),
         ]);
@@ -34,6 +36,7 @@ class UserSeeder extends Seeder
             'fullname' => 'juliana diaz',
             'rol' => 'estudiante',
             'email' => 'estudiante@gmail.com',
+            'path' => '',
             'remember_token' => Str::random(10),
             'password' => Hash::make(12345678),
         ]);
@@ -41,6 +44,7 @@ class UserSeeder extends Seeder
             'fullname' => 'jose castillo',
             'rol' => 'estudiante',
             'email' => 'estudiante2@gmail.com',
+            'path' => '',
             'remember_token' => Str::random(10),
             'password' => Hash::make(12345678),
         ]);
