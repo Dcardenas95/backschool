@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Session;
 
 class UsersController extends Controller
@@ -60,7 +61,8 @@ class UsersController extends Controller
             'fullname' => 'required',
             'email' => 'required',
             'rol' => 'required',
-            'avatar' => 'required|mimes:jpg,bmp,png, '
+            'avatar' => 'required|mimes:jpg,bmp,png,',
+            'password' => 'required',
         ];
 
         $messages = [
@@ -68,7 +70,8 @@ class UsersController extends Controller
             'email.required' => 'email is required!',
             'rol.required' => 'rol is required!',
             'avatar.required' => 'avatar is required!',
-            'avatar.mimes' => 'avatar format file as (jpg,bmp,png)'
+            'avatar.mimes' => 'avatar format file as (jpg,bmp,png)',
+            'password.required' => 'password is required!',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -93,7 +96,9 @@ class UsersController extends Controller
     }
 
     public function destroy($id) {
+        $user = User::find($id);
         User::destroy($id);
+        Storage::delete($user->path);
         return response()->json(['status' => 200, 'response' =>  true]);
     }
 
@@ -107,18 +112,39 @@ class UsersController extends Controller
             'fullname' => 'required',
             'email' => 'required',
             'rol' => 'required',
-            'avatar' => 'required|mimes:jpg,bmp,png, '
+            'avatar' => 'mimes:jpg,bmp,png'
         ];
 
         $messages = [
             'fullname.required' => 'fullname is required!',
             'email.required' => 'email is required!',
             'rol.required' => 'rol is required!',
-            'avatar.required' => 'avatar is required!',
             'avatar.mimes' => 'avatar format file as (jpg,bmp,png)'
         ];
 
+        if($request->password) {
+            array_merge($rules, [
+                'password' => 'required'
+            ]);
+            array_merge($messages, [
+                ['password.required' => 'password is required!']
+            ]);
+        }
+
+        $path = '';
+
+        if($request->avatar) {
+            array_merge($rules, [
+                'avatar' => 'required|mimes:jpg,bmp,png,',
+            ]);
+            array_merge($messages, [
+                ['avatar.required' => 'avatar format file as (jpg,bmp,png)']
+            ]);
+            $path = Storage::putFile('avatars', $request->file('avatar'));
+        }
         $validator = Validator::make($request->all(), $rules, $messages);
+
+        return response()->json(['status' => 200, 'response' => ['id' => $id, 'request' => $request->all()]]);
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -128,14 +154,18 @@ class UsersController extends Controller
             ]);
         }
         $user = User::find($id);
-        // $path = Storage::putFile('avatars', $request->file('avatar'));
+
+
+        if($request->avatar) {
+            $fileOld = substr($user->path, 0, 8);
+            Storage::delete();
+        }
         $save = $user->save([
             'fullname' => $request->fullname,
             'email' => $request->email,
             'rol' => $request->rol,
-            // 'path' => $path,
-            // 'password' => Hash::make($request->password)
-            // 'password' => bcrypt($request->password)
+            'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
+            'path' => isset($request->avatar) ? $path : $user->path,
         ]);
         return response()->json(['status' => 200, 'response' => true]);
     }
