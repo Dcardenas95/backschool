@@ -66,12 +66,12 @@ class UsersController extends Controller
         ];
 
         $messages = [
-            'fullname.required' => 'fullname is required!',
-            'email.required' => 'email is required!',
-            'rol.required' => 'rol is required!',
-            'avatar.required' => 'avatar is required!',
-            'avatar.mimes' => 'avatar format file as (jpg,bmp,png)',
-            'password.required' => 'password is required!',
+            'fullname.required' => 'fullname is required to store!',
+            'email.required' => 'email is required to store!',
+            'rol.required' => 'rol is required to store!',
+            'avatar.required' => 'avatar is required to store!',
+            'avatar.mimes' => 'avatar format file as (jpg,bmp,png) to store',
+            'password.required' => 'password is required to store!',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -82,17 +82,18 @@ class UsersController extends Controller
                 'status' => 201,
                 'response' => $errors,
             ]);
+        } else {
+            $path = Storage::putFile('avatars', $request->file('avatar'));
+            $save = User::create([
+                'fullname' => $request->fullname,
+                'email' => $request->email,
+                'rol' => $request->rol,
+                'path' => $path,
+                'password' => Hash::make($request->password)
+                // 'password' => bcrypt($request->password)
+            ]);
+            return response()->json(['status' => 200, 'response' => true]);
         }
-        $path = Storage::putFile('avatars', $request->file('avatar'));
-        $save = User::create([
-            'fullname' => $request->fullname,
-            'email' => $request->email,
-            'rol' => $request->rol,
-            'path' => $path,
-            'password' => Hash::make($request->password)
-            // 'password' => bcrypt($request->password)
-        ]);
-        return response()->json(['status' => 200, 'response' => true]);
     }
 
     public function destroy($id) {
@@ -112,39 +113,17 @@ class UsersController extends Controller
             'fullname' => 'required',
             'email' => 'required',
             'rol' => 'required',
-            'avatar' => 'mimes:jpg,bmp,png'
+            'password' => 'required',
         ];
 
         $messages = [
-            'fullname.required' => 'fullname is required!',
-            'email.required' => 'email is required!',
-            'rol.required' => 'rol is required!',
-            'avatar.mimes' => 'avatar format file as (jpg,bmp,png)'
+            'fullname.required' => 'fullname is required to update!',
+            'email.required' => 'email is required to update!',
+            'rol.required' => 'rol is required to update!',
+            'password.required' => 'password is required to update!',
         ];
 
-        if($request->password) {
-            array_merge($rules, [
-                'password' => 'required'
-            ]);
-            array_merge($messages, [
-                ['password.required' => 'password is required!']
-            ]);
-        }
-
-        $path = '';
-
-        if($request->avatar) {
-            array_merge($rules, [
-                'avatar' => 'required|mimes:jpg,bmp,png,',
-            ]);
-            array_merge($messages, [
-                ['avatar.required' => 'avatar format file as (jpg,bmp,png)']
-            ]);
-            $path = Storage::putFile('avatars', $request->file('avatar'));
-        }
         $validator = Validator::make($request->all(), $rules, $messages);
-
-        return response()->json(['status' => 200, 'response' => ['id' => $id, 'request' => $request->all()]]);
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -152,21 +131,17 @@ class UsersController extends Controller
                 'status' => 201,
                 'response' => $errors,
             ]);
-        }
-        $user = User::find($id);
+        }else {
+            $user = User::find($id);
 
+            $user->fullname = $request->fullname;
+            $user->email = $request->email;
+            $user->rol = $request->rol;
+            $user->password = Hash::make($request->password);
 
-        if($request->avatar) {
-            $fileOld = substr($user->path, 0, 8);
-            Storage::delete();
+            $save = $user->save();
+
+            return response()->json(['status' => 200, 'response' => true]);
         }
-        $save = $user->save([
-            'fullname' => $request->fullname,
-            'email' => $request->email,
-            'rol' => $request->rol,
-            'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
-            'path' => isset($request->avatar) ? $path : $user->path,
-        ]);
-        return response()->json(['status' => 200, 'response' => true]);
     }
 }
