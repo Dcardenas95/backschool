@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CoursesController;
+use App\Http\Controllers\StudensCoursesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +27,4 @@ Route::apiResource('users', UsersController::class);
 Route::apiResource('courses', CoursesController::class);
 Route::apiResource('notes', NotesController::class);
 
+Route::apiResource('/student/courses', StudensCoursesController::class);
