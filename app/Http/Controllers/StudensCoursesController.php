@@ -10,7 +10,7 @@ class StudensCoursesController extends Controller
 {
     public function index(){
 
-        $users = User::find(4)->courses();
+        $users = User::with('courses')->where('rol', 'Estudiante')->get();
         // $users = $user->courses;
         return response()->json(['status' => 200, 'response' => $users]);
 

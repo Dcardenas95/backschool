@@ -27,8 +27,10 @@ class User extends Authenticatable
         'path'
     ];
 
+    
+
     public function  courses(){
-        $this->belongsToMany(courses::class)->withTimestamps();
+        return $this->belongsToMany('App\Models\courses','studens_courses')->withTimestamps();
     }
 
 
