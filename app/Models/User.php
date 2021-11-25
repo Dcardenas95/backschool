@@ -27,14 +27,6 @@ class User extends Authenticatable
         'path'
     ];
 
-    
-
-    public function  courses(){
-        return $this->belongsToMany('App\Models\courses','studens_courses')->withTimestamps();
-    }
-
-
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -55,5 +47,9 @@ class User extends Authenticatable
     ];
 
 
+    public function  courses(){
+        return $this->belongsToMany('App\Models\Courses','studens_courses','user_id','course_id')
+        ->withTimestamps();
+    }
 
 }

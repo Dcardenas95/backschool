@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class courses extends Model
+class Courses extends Model
 {
     protected $table='courses';
 
@@ -13,7 +13,7 @@ class courses extends Model
         'name',
     ];
 
-    public function  Users(){
-        return $this->belongsToMany('App\Models\User','studens_courses')->withTimestamps();
+    public function  users(){
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 }

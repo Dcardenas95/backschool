@@ -3,40 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreStudentCourse;
 use App\Models\studensCourses;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
 
 class StudensCoursesController extends Controller {
+
     public function index(){
-        $users = User::with('courses')->where('rol', 'Estudiante')->get();
-        // $users = $user->courses;
-        return response()->json(['status' => 200, 'response' => $users]);
+        $students = User::with('courses')->where('rol','estudiante')->get();
+        // $students = User::with(['courses'=> function ($query){
+        //     $query->select('name');
+        // }])->where('rol','estudiante')->get();
+
+        return response()->json(['status' => 200, 'response' => $students]);
     }
 
-    public function store(Request $request){
+    public function store(StoreStudentCourse $request){
         // Aqui haces la funcion store commun y corriente apuntado al modelo studensCourses
-        $rules = [
-            'course_id' => 'required',
-            'user_id' => 'required',
+        $data = $request->validated();
+        $user = User::find($data['user_id']);
+        $user->courses()->attach($data['course_id']);
 
-        ];
-        $messages = [
-            'course_id.required' => 'course_id is required to store!',
-            'user_id.required' => 'user_id is required to store!',
-        ];
-
-        $validator = Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return response()->json([
-                'status' => 201,
-                'response' => $errors,
-            ]);
-        } else {
-            $course = new studensCourses;
-            $course->create($request->all());
-            return response()->json(['status' => 200, 'response' => true]);
-        }
+        return response()->json(['status' => 201, 'response' => true]);
     }
 }
