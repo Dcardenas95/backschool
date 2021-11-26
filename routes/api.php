@@ -28,3 +28,4 @@ Route::apiResource('courses', CoursesController::class);
 Route::apiResource('notes', NotesController::class);
 
 Route::apiResource('/student/courses', StudensCoursesController::class);
+Route::get('/students/all', [StudensCoursesController::class, 'onlyStudents']);

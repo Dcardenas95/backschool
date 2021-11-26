@@ -28,4 +28,10 @@ class StudensCoursesController extends Controller {
 
         return response()->json(['status' => 201, 'response' => true]);
     }
+
+    public function onlyStudents()
+    {
+        $students = User::where('rol','estudiante')->get();
+        return response()->json(['status' => 200, 'response' => $students]);
+    }
 }
